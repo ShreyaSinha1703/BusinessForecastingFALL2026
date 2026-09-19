@@ -1,2 +1,2 @@
 # BusinessForecastingFALL2026
-Files and Assignments for Business Forecasting course
+This contains Files and Assignments for a Business Forecasting course
