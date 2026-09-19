@@ -1,0 +1,76 @@
+---
+title: "Typical Employee Assignment"
+author: "Shreya Sinha"
+date: "2026-09-19"
+output: html_document
+---
+```{r}
+Typical_Employee_Survey_Data_Updated <- read.csv("~/Desktop/FALL 2026/BF/Typical_Employee_Survey_Data_Updated.csv")
+```
+# 5 Point Summary
+```{r}
+fivenum(Typical_Employee_Survey_Data_Updated$Age)
+fivenum(Typical_Employee_Survey_Data_Updated$Gender)
+fivenum(Typical_Employee_Survey_Data_Updated$Satisfaction)
+fivenum(Typical_Employee_Survey_Data_Updated$Job.Characteristic)
+fivenum(Typical_Employee_Survey_Data_Updated$Years.worked)
+fivenum(Typical_Employee_Survey_Data_Updated$Promotion.Likeliness)
+fivenum(Typical_Employee_Survey_Data_Updated$Decision.making)
+fivenum(Typical_Employee_Survey_Data_Updated$Budget.Decision)
+fivenum(Typical_Employee_Survey_Data_Updated$Proud)
+fivenum(Typical_Employee_Survey_Data_Updated$Turn.down)
+fivenum(Typical_Employee_Survey_Data_Updated$Relations)
+```
+# Box plots for Numerical
+```{r}
+
+boxplot(Typical_Employee_Survey_Data_Updated$Age)
+boxplot(Typical_Employee_Survey_Data_Updated$Years.worked)
+```
+#Converting to Factors
+```{r}
+Typical_Employee_Survey_Data_Updated$Gender<- as.factor(Typical_Employee_Survey_Data_Updated$Gender)
+Typical_Employee_Survey_Data_Updated$Satisfaction<- as.factor(Typical_Employee_Survey_Data_Updated$Satisfaction)
+Typical_Employee_Survey_Data_Updated$Job.Characteristic<- as.factor(Typical_Employee_Survey_Data_Updated$Job.Characteristic)
+Typical_Employee_Survey_Data_Updated$Promotion.Likeliness<- as.factor(Typical_Employee_Survey_Data_Updated$Promotion.Likeliness)
+Typical_Employee_Survey_Data_Updated$Decision.making<- as.factor(Typical_Employee_Survey_Data_Updated$Decision.making)
+Typical_Employee_Survey_Data_Updated$Budget.Decision<- as.factor(Typical_Employee_Survey_Data_Updated$Budget.Decision)
+Typical_Employee_Survey_Data_Updated$Proud<- as.factor(Typical_Employee_Survey_Data_Updated$Proud)
+Typical_Employee_Survey_Data_Updated$Turn.down<- as.factor(Typical_Employee_Survey_Data_Updated$Turn.down)
+Typical_Employee_Survey_Data_Updated$Relations<- as.factor(Typical_Employee_Survey_Data_Updated$Relations)
+```
+# Visual Representation
+```{r}
+## The best visual for Age is histogram
+hist(Typical_Employee_Survey_Data_Updated$Age)
+## The bar plot is best for Gender
+barplot(table(Typical_Employee_Survey_Data_Updated$Gender))
+## The bar plot for all the Likert scale and histogram for years worked
+barplot(table(Typical_Employee_Survey_Data_Updated$Satisfaction))
+barplot(table(Typical_Employee_Survey_Data_Updated$Job.Characteristic))
+barplot(table(Typical_Employee_Survey_Data_Updated$Promotion.Likeliness))
+barplot(table(Typical_Employee_Survey_Data_Updated$Decision.making))
+barplot(table(Typical_Employee_Survey_Data_Updated$Budget.Decision))
+barplot(table(Typical_Employee_Survey_Data_Updated$Proud))
+barplot(table(Typical_Employee_Survey_Data_Updated$Turn.down))
+barplot(table(Typical_Employee_Survey_Data_Updated$Relations))
+hist(Typical_Employee_Survey_Data_Updated$Years.worked)
+```
+
+# Scatter Plot
+```{r}
+plot(Typical_Employee_Survey_Data_Updated$Age,Typical_Employee_Survey_Data_Updated$Years.worked,pch=19,col="darkgreen", main="Years worked VS Age")
+plot(Typical_Employee_Survey_Data_Updated$Years.worked,Typical_Employee_Survey_Data_Updated$Promotion.Likeliness,pch=19,col="orange",main="Years Worked VS Promotion Likeliness")
+```
+
+# Heat Map - Extra
+```{r}
+## Used Google to find the best way to compare Likert scales and Heat Map was the suggestion on a Reddit Forum.
+heatmap_matrix <- table(Typical_Employee_Survey_Data_Updated$Promotion.Likeliness,Typical_Employee_Survey_Data_Updated$Turn.down)
+image(x = 1:5, y = 1:5, z = heatmap_matrix,
+col = hcl.colors(12, "YlOrRd", rev = TRUE),
+main = "Heatmap: Promotion vs. Turn Down",
+xlab = "Promotion Likeliness (1-5)",
+ylab = "Turn Down Offer (1-5)")
+grid(nx = 5, ny = 5, col = "gray", lty = "solid")
+```
