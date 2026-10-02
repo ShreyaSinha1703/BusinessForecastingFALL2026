@@ -1,0 +1,90 @@
+---
+title: "Retail_Sales_Forecast"
+author: "Shreya Sinha"
+date: "2026-10-02"
+output: html_document
+---
+# Installing the forecasting package
+```{r}
+library(fpp2)
+RetailSalesBF <- read.csv("~/Desktop/FALL 2026/BF/RetailSalesBF.csv")
+```
+
+# Trend and Seasonality
+```{r}
+#The plot and Acf is built to show trend and seasonality
+
+sales <- ts(RetailSalesBF$ClothingSalesUSD, start = c(1992, 1), frequency = 12)
+plot(sales)
+#The plot shows a clear trend upwards with a dip near 2020 most likely because retails stores closed due to the pandemic.
+
+Acf(sales)
+#Acf shows bars above the threshold dotted blue lines which indicate seasonality. The lag 12 and 24 is higher than the other bars, hence there is a seasonality confirmed. 
+```
+
+# Simple Mean Calculation
+```{r}
+mean_forecast <- meanf(sales,10)
+plot(mean_forecast)
+# The forecast is a flat line as this model bases its forecast on the mean value of all the historical data. The trend and seasonality is not considered and accounted for.
+```
+
+# Naive Model
+```{r}
+naive_forecast <- naive(sales,10)
+plot(naive_forecast)
+#The model bases its forecast on the last known value. It is basically following the most recent level value.
+```
+
+# Seasonal Naive Model
+```{r}
+snaive_forecast <- snaive(sales,10)
+plot(snaive_forecast)
+#The seasonal naive model is able to account for the latest seasonality it sees but the trend or historical data is not considered.
+```
+
+# Moving Averages
+```{r}
+MA3_forecast <- ma(sales,order=3)
+MA5_forecast <- ma(sales,order=5)
+MA50_forecast <-ma(sales,order = 50)
+plot(MA3_forecast)
+plot(MA5_forecast)
+plot(MA50_forecast)
+# These models forecast a trend based on the historical data period we selected which smooths out the curve the larger the range of data you get the average for. However, it does not account for seasonality and only bases its forecast on the historical data.
+```
+
+# Holt Winters
+```{r}
+HW_forecast <- HoltWinters(sales)
+HW_forecast
+# The alpha, beta and gamma values correspond to level, trend and seasonality respectively. The level is close to 1 so it means it is more affected by recent data. The beta is 0 which means this model is taking the historical trend to forecast for the next values. The gamma is 1 which basically means it is based completely on new recent data. The forecast is following the seasonality and giving values based on each years seasonality as it goes ahead.
+plot(HW_forecast)
+HW_fore <- forecast(HW_forecast, h = 10)
+#This model covers level, trend and seasonality. The plot clearly shows that the predicted values follow very closely to the actual data. It is following and accounting for the trend and the seasonality. 
+```
+
+# Single Chart showing all forecasts
+```{r}
+plot(mean_forecast)
+lines(naive_forecast$mean,col="darkblue")
+lines(snaive_forecast$mean,col="green")
+lines(MA3_forecast,col="magenta")
+lines(MA5_forecast,col="purple")
+lines(MA50_forecast,col="orange")
+lines(HW_fore$mean,col="red")
+```
+
+# Accuracy Check and Best Model
+```{r}
+accuracy(mean_forecast)
+accuracy(naive_forecast)
+accuracy(snaive_forecast)
+accuracy(MA3_forecast, sales)
+accuracy(MA5_forecast, sales)
+accuracy(MA50_forecast, sales)
+accuracy(HW_fore)
+# I am comparing the MAPE for all since the data is moving so much and is large, the percentage error gives a good indicator over the full period. I used MAPE instead of MPE to get absolute values so the errors don't cancel each other out.
+#The lower the MAPE, better is the forecasting model. The MAPE are as follows: Mean 33.93%, Naive 21.30%, Seasonal naive 7.59%, MA3 10.81%, MA5 14.17%, MA50 15.19%, Holt-Winters 4.97%
+#For this case the lowest MAPE is seen for the HoltsWinter forecast at 4.97% and highest for the simple mean at 33.93%. This makes sense because the HW forecasting model accounts for the trend and seasonality in the data whereas the mean ignores both and just flattens out at the average value. Hence the best model is the Holts Winter with the lowest MAPE.
+```
