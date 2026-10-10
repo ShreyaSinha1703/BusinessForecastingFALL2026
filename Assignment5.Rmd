@@ -1,0 +1,64 @@
+---
+title: "Assignment5"
+author: "Shreya Sinha"
+date: "2026-10-09"
+output: html_document
+---
+# Downloading Library
+```{r}
+library(fpp2)
+```
+
+# Importing CSV
+```{r}
+RetailSalesBF <- read.csv("~/Desktop/FALL 2026/BF/RetailSalesBF.csv")
+```
+
+# Plotting graph
+```{r}
+sales <- ts(RetailSalesBF$ClothingSalesUSD, start = c(1992, 1), frequency = 12)
+plot(sales)
+```
+
+# Decomposition
+```{r}
+stl_decomp <- stl(sales,s.window ="periodic")
+plot(stl_decomp)
+attributes(stl_decomp)
+#Trend is affecting about 40-50%. From 10000 to about 30000. It is the largest part so a lot of the change in sales comes from the continuous upward trend.
+# Seasonality is about 40%. From -5000 to close to 10000. It repeats every 12 months, we can see a big December spike and drop in the early part of the year.
+# The remainder is mostly small throughout, so trend and seasonality explain most of the sales data. The major effect is from 2020 which is the COVID drop, this was an irregular and unpredictable event.
+```
+
+# Seasonally Adjusted Data
+```{r}
+seasadj(stl_decomp)
+plot(sales)
+lines(seasadj(stl_decomp), col="Red")
+# The red line is showing the data without the seasonality component. We can see that the large spikes are not present and the data follows the upward trend as well as the pandemic drop which was pertaining to the irregular pattern. The data is within a shorter range without the seasonality. 
+```
+
+# Forecasting
+```{r}
+f_stl <- forecast(stl_decomp)
+f_stl
+plot(f_stl)
+# This gives us the forecast for the default period. The forecast starts with the last value. The grey area is the range where the possible values are.The A represents an Additive model for the level and the seasonality component is added back in as it is a decomposition model.
+
+f_stl10 <- forecast(stl_decomp,h=10)
+f_stl10
+plot(f_stl10)
+#This gives us the forecast for 10 months
+```
+
+# Decomposition Method 2
+```{r}
+decomp_sales <- decompose(sales)
+plot(decomp_sales)
+attributes(decomp_sales)
+seasadj(decomp_sales)
+plot(seasadj(decomp_sales))
+#This is another way to run the decomposition.The plot elements are similar to the one generated with stl. The attributes show the names of the components and the seasonal adjustment plot shows the adjusted data. 
+```
+
+
