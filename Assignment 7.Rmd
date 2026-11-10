@@ -1,0 +1,99 @@
+---
+title: "Assignment 7"
+author: "Shreya Sinha"
+date: "2026-11-10"
+output: html_document
+---
+
+# Downloading Library
+```{r}
+library(fpp2)
+library(forecast)
+options(scipen = 999)
+```
+
+# Data
+
+```{r}
+RetailSalesBF <- read.csv("~/Desktop/FALL 2026/BF/data/RetailSalesBF.csv")
+sales <- ts(RetailSalesBF$ClothingSalesUSD, start = c(1992, 1), frequency = 12)
+
+# I am taking only the recovery period after the COVID drop since that is a structural change in the plot (May 2020 to Jul 2026)
+rec <- window(sales, start = c(2020, 5))
+plot(rec, main = "Clothing sales from May 2020")
+# The plot shows a big spike every December and a small rise in the level over time, so the data has seasonality yearly probably due to the holiday season.
+```
+
+# Differencing for Stationarity
+
+```{r}
+ndiffs(rec)
+# The output of 1 means the data needs one difference to remove the trend part
+
+nsdiffs(rec)
+# The output of 1 means the data needs one seasonal difference to remove the seasonality of yearly pattern
+
+tsdisplay(rec)
+# The ACF has a big bar above the dotted blue lines at lag 12 and 24, so the yearly pattern of seasonality is clear.
+
+tsdisplay(diff(rec, 12))
+# We can remove the pattern after differencing it but the data is still not stationary but the lag 12 and 24 bars are within the blue dotted lines now. 
+
+ndiffs(diff(rec, 12))
+tsdisplay(diff(diff(rec, 12)))
+# We will difference regulaary again and now plot looks stationary and almost flat, this is the data we will use for the arima model. 
+```
+
+# ARIMA Model
+
+```{r}
+auto_fit <- auto.arima(rec, trace = TRUE, stepwise = FALSE)
+# We print all the models tried for Arima, we will look at the AIC and BIC and the lower it is the better the model.
+auto_fit
+attributes(auto_fit)
+# From the output we can see the best model is ARIMA(0,2,2)(0,1,0)[12] where (p,d,q) = (0,2,2) and the seasonal part (P,D,Q)[12] = (0,1,0) with a seasonality factor of 12. Since the p is 0 there is no past values from the time series used directly. d is 2 so the data is differenced twice to make it stationary and remove trend. The q is 2 so 2 moving averages are used which two past residuals are taken to do the forecasting.
+# Since the P is 0 the model does not look at any previous seasonal values directly. The D of 1 tells us that we use one seasonal difference so the model subtracts the value of the same month from the previous year. Q of 0 means there is no past seasonal residuals taken
+# The log likelihood is -538.01, AIC is 1082.02, AICc is 1082.45 and BIC is 1088.36. These scores are used to compare models. Lower is better.
+# Since ARIMA requires a lot of data so, since the post COVID period is only 75 months, the model is quite sensitive.
+```
+
+
+
+# Residual analysis
+
+```{r}
+Acf(auto_fit$residuals)
+# The bars are mostly withing blue lines, the lag 1 is slightly above so there is a small pattern still seen but no such trend or seaonality.
+
+Box.test(residuals(auto_fit), lag = 20, type = "Ljung")
+# The p-value is 0.39, which is above alpha of 0.05. This means the errors look like random noise, and there is no strong pattern left which is a good indicator of model fit and accuracy
+
+plot.ts(residuals(auto_fit))
+# The errors are spikining up and going down near the 0 but theres so pattern. The first few recovery months of 2020 have the biggest errors likely due to the recovery period after COVID
+
+hist(auto_fit$residuals)
+# The errors are clustered near 0. A few positive value errors make the tail longer on right side.
+
+tsdiag(auto_fit)
+# The plots look similar with some errors in a random pattern and bars are mostly within blue lines and the ljung box p values are above 0.05 for most of them.
+
+# Overall, the model errrors are randome and no pattern is seen so the model does well in capturing all the seasonality and trend.
+```
+
+
+# Forecasting the next five periods
+
+```{r}
+f_arima <- forecast(auto_fit, h = 5)
+f_arima
+plot(f_arima, main = "ARIMA forecast, next 5 periods")
+# h = 5 means the next five periods which is from August to Dec 2026. The forecast seems to follow similar pattern and depicts small growth from past months. There is a peak in December and slight drop in September that we can see. 
+# The blue line shows the forecast. The dark shaded area is the 80% range and the lighter shaded area is the 95% range. The range gets wider because as we predict more and more in the future the accuracy will decrease as we are less sure.
+```
+
+# Accuracy
+
+```{r}
+accuracy(auto_fit)
+# The MAPE is 3.50% which means on average the forecast is about 3.5% away from the actual sales. This is a a rerlatively low percentage of error which means the model is accurate. The RMSE is 1,385 and MAE 845 which show the same error in dollar values. The MPE is 1.45% and ME is 398 which is also small. The Acf 1 is 0.3 which goes with the lag 1 long bar we saw in the residual acf plot so there is some small leftover pattern in the residuals at lag 1. 
+```
