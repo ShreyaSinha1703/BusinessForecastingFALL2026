@@ -9,10 +9,8 @@ Forecasts monthly retail clothing sales for the next 2 years (Aug 2026 to Jul 20
 | File | What it is |
 |---|---|
 | `RetailSalesBF.csv` | Data: monthly clothing sales in USD (Date as dd/mm/yy), Jan 1992 to Jul 2026 |
-| `Clothing_Sales_Project.Rmd` | Main R code: exploration, decomposition, nine forecasting methods, accuracy comparison, residual analysis, final forecast |
-| `Clothing_ARIMA_Assignment.Rmd` | ARIMA assignment: model output explained, residual analysis, 5-month forecast, accuracy |
-| Project presentation (`.pptx`) | Slides for classmates: problem, data, method, exploration, model judgement, recommendation, forecast, ideas to improve |
-| `Clothing_Sales_Management_Summary.docx` | One-page memo for management with the recommendation |
+| Business Forecasting -  Final Project(`.pptx`) | Slides for classmates: problem, data, method, exploration, model judgement, recommendation, forecast, ideas to improve |
+| `BF Final Project - Management Team Doc` | One-page memo for management with the recommendation |
 
 ## Methodology
 - **Window:** recovery period only, May 2020 to Jul 2026.
