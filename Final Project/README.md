@@ -15,7 +15,7 @@ Forecasts monthly retail clothing sales for the next 2 years (Aug 2026 to Jul 20
 ## Methodology
 - **Window:** recovery period only, May 2020 to Jul 2026.
 - **Models compared:** mean, naive, seasonal naive, moving averages, simple smoothing, Holt-Winters, ETS, STL + ETS, ARIMA.
-- **Accuracy measure:** MAPE (error as a percentage of sales, fair across small and large months), with RMSE and MAE as a cross-check.
+- **Accuracy measure:** MAPE (error as a percentage of sales, fair across small and large months)
 - **Checks:** residual plots, ACF and Ljung-Box test for each model.
 
 ## Summary of Results
@@ -25,6 +25,6 @@ Forecasts monthly retail clothing sales for the next 2 years (Aug 2026 to Jul 20
 - December 2026 peak about 43,100 and January 2027 low about 21,600.
 
 ## Notes and limitations
-- Only 75 months of data are used, and accuracy is measured on the same data the models were fitted on (no held-out test set).
+- Only 75 months of data are used, and accuracy is measured on the same data the models were fitted on
 - The ARIMA model needs three differences in total, so its forecast range is wide.
 - COVID months are excluded rather than modelled, and no outside factors (prices, income, promotions) are included.
